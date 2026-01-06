@@ -3,7 +3,7 @@ import { Row, Col, Button, Card } from "react-bootstrap";
 export default function LeftBar() {
 
   return (
-    <Col md={3}>
+    <Col md={4}>
       <Card id="Price Range">
         <Row>
           <h3>Price Range</h3>s

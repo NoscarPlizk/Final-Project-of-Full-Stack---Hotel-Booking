@@ -1,8 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Nav, Navbar, Card, Row, Col } from "react-bootstrap";
 import { Outlet } from "react-router-dom";
+import { useState } from 'react';
+import { InfoContext } from "../content/infoContent";
 
 export default function Layout() {
+  const [ initialDate, setInitialDate ] = useState('');
+  const [ dueDate, setDueDate ] = useState('');
+  const [ adultPax, setAdultPax ] = useState('');
+  const [ childPax, setChildPax ] = useState('');
+
+  const startDate = (value) => {
+    setInitialDate(value);
+  }
+
+  const endDate = (value) => {
+    setDueDate(value);
+  }
+
   return (
     <>
       <Navbar bg="light">
@@ -10,10 +25,46 @@ export default function Layout() {
           <Navbar.Brand href='/'>Hotel4Book</Navbar.Brand>
           <Nav>
             <Nav.Link href='/userAuth'>Let Login</Nav.Link>
+            <Nav.Link href='/allbookedlist'>Check Booked Hotel List</Nav.Link>
           </Nav>
         </Container>
+        <Card className="mx-auto">
+          <Card.Body>
+            <Row>
+              <Col>
+              <h4>City, destination, or hotel name</h4>
+                <input type="text" list="Location" placeholder="Location" />
+                <datalist id="Location" >
+                  <option value="Kuala Lumpur" />
+                  <option value="Singapore" />
+                  <option value="Bangkok" />
+                  <option value="Jakarta" />
+                  <option value="Ho Chi Minh City" />
+                </datalist>
+              </Col>
+              <Col>
+                <h4>Check In and out</h4>
+                  <input type="date" value={initialDate} onChange={(e) => startDate(e.target.value)}/>
+                  <input type="date" value={dueDate} onChange={(e) => endDate(e.target.value)}/>
+              </Col>
+              <Col>
+                <h4>How many People?</h4>
+                <select value={adultPax} onChange={(e) => setAdultPax(e.target.value)}>
+                  <option value='1'>1 Adult</option>
+                  <option value='2'>2 Adult</option>
+                </select>
+                <select value={childPax} onChange={(e) => setChildPax(e.target.value)}>
+                  <option value='1'>1 Children</option>
+                  <option value='2'>2 Children</option>
+                </select>
+              </Col>
+            </Row>
+          </Card.Body> 
+        </Card>        
       </Navbar>
-      <Outlet />
+      <InfoContext.Provider value={{ initialDate, dueDate, adultPax, childPax }}>
+        <Outlet />
+      </InfoContext.Provider>
     </>
   );
 }

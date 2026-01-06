@@ -22,7 +22,7 @@ export default function Posts({ img, name, location, star, price }) {
     <Card>
       <Row>
         <Col> 
-          <img src={img} width="200" height="250" />
+          <img src={img} width="400" height="450" />
         </Col>
         <Col>
           <h3>{name}</h3>
