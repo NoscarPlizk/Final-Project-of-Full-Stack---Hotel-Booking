@@ -19,11 +19,11 @@ function AppRoute() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/userauth" element={<AuthPages />} />
-          <Route path="/viewhotel" element={<ViewHotel />} />
-          <Route path="/userpage" element={<UserPage />} />
-          <Route path="/allbookedlist" element={<AllBookedList />} />
-          <Route path="/payment" element={<Payment />} />
+          <Route path="userauth" element={<AuthPages />} />
+          <Route path="viewhotel" element={<ViewHotel />} />
+          <Route path="userpage" element={<UserPage />} />
+          <Route path="allbookedlist" element={<AllBookedList />} />
+          <Route path="payment" element={<Payment />} />
         </Route>
       </Routes>
     </BookedList.Provider>

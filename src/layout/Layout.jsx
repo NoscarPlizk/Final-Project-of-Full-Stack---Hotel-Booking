@@ -1,10 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Nav, Navbar, Card, Row, Col } from "react-bootstrap";
 import { Outlet } from "react-router-dom";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { BookedList } from '../content/hotelContent';
 import { InfoContext } from "../content/infoContent";
 
 export default function Layout() {
+  const token = useContext(BookedList).token;
   const [ initialDate, setInitialDate ] = useState('');
   const [ dueDate, setDueDate ] = useState('');
   const [ adultPax, setAdultPax ] = useState('');
@@ -20,12 +22,14 @@ export default function Layout() {
 
   return (
     <>
-      <Navbar bg="light">
+      <Navbar bg="success">
         <Container>
-          <Navbar.Brand href='/'>Hotel4Book</Navbar.Brand>
+          <Navbar.Brand href='/'><strong>Hotel4Book</strong></Navbar.Brand>
           <Nav>
-            <Nav.Link href='/userAuth'>Let Login</Nav.Link>
+            <Nav.Link href='/userauth'>Let Login</Nav.Link>
             <Nav.Link href='/allbookedlist'>Check Booked Hotel List</Nav.Link>
+            {token ? <Nav.Link href='/userpage'>User Profile</Nav.Link> : null }
+            
           </Nav>
         </Container>
         <Card className="mx-auto">

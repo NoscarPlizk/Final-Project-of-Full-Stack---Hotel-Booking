@@ -5,17 +5,15 @@ import useLocalStorage from "use-local-storage";
 import { useNavigate } from "react-router-dom";
 
 export default function AuthPages() {
-  const [ token, setToken ] = useLocalStorage( "token", '' );
+  const [ token, setToken ] = useLocalStorage('token', '');
   const [ show, setShow ] = useState(false);
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   const redirect = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      redirect('/', {state: {token}});
-      return;
-    }
+    console.log("token on render:", JSON.stringify(token));
+    if (token) redirect('/', {state: {token}});
   }, [token, redirect]);
 
   const handleShowRegister = () => {
@@ -31,7 +29,7 @@ export default function AuthPages() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${url}/login`, { username, password });
+      const res = await axios.post(`${url}login`, { username, password });
       if (res.data && res.data.auth === true && res.data.token) {
         setToken(res.data.token);
         console.log('login was successful, token saved');

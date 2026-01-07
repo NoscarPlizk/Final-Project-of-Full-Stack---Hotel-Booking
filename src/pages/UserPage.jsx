@@ -2,11 +2,7 @@ import { Col, Image, Row } from "react-bootstrap";
 import axios from "axios";
 
 
-export default function UserPage() {
-
-  db = "lognlongurl"
-  
-
+export default function UserPage() {  
 
   return (
     <>
@@ -19,14 +15,12 @@ export default function UserPage() {
         <h1>Username</h1>
       </Row>
       <Row>
-        {post.map((booked) => {
-          <ul key={booked.id} />
-        })}
+
         <Button>
-          Edit
+          Edit Profile Settings
         </Button>
-        <Button>
-          Delete
+        <Button >
+          Log Out
         </Button>
       </Row>
 
