@@ -1,20 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Modal, Button, Form, Container } from "react-bootstrap";
 import axios from "axios";
-import useLocalStorage from "use-local-storage";
 import { useNavigate } from "react-router-dom";
+import { BookedList } from "../content/hotelContent";
 
 export default function AuthPages() {
-  const [ token, setToken ] = useLocalStorage('token', '');
   const [ show, setShow ] = useState(false);
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   const redirect = useNavigate();
+  const token = useContext(BookedList).token;
+  const setToken = useContext(BookedList).setToken;
 
   useEffect(() => {
-    console.log("token on render:", JSON.stringify(token));
-    if (token) redirect('/', {state: {token}});
-  }, [token, redirect]);
+    if (token) redirect('/');
+  }, [token]);
 
   const handleShowRegister = () => {
     setShow(true);
@@ -43,7 +43,7 @@ export default function AuthPages() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${url}/signup`, { username, password });
+      const res = await axios.post(`${url}signup`, { username, password });
       console.log(res.data);
     } catch (error) {
       console.error(error);

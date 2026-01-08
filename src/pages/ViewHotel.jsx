@@ -20,7 +20,7 @@ export default function ViewHotel() {
   const inspectAuthThenAddBook = () => {
     if (!token) redirect('/userauth');
     setBooked([...booked, {image, name, room, total} ]);
-    redirect("/Home");
+    redirect("/");
   }
 
   const increaseRoomAmount = () => {

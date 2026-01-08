@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Nav, Navbar, Card, Row, Col } from "react-bootstrap";
+import { Container, Nav, Navbar, Card, Row, Col, Button, Image } from "react-bootstrap";
 import { Outlet } from "react-router-dom";
 import { useState, useContext } from 'react';
 import { BookedList } from '../content/hotelContent';
@@ -7,6 +7,7 @@ import { InfoContext } from "../content/infoContent";
 
 export default function Layout() {
   const token = useContext(BookedList).token;
+
   const [ initialDate, setInitialDate ] = useState('');
   const [ dueDate, setDueDate ] = useState('');
   const [ adultPax, setAdultPax ] = useState('');
@@ -26,10 +27,19 @@ export default function Layout() {
         <Container>
           <Navbar.Brand href='/'><strong>Hotel4Book</strong></Navbar.Brand>
           <Nav>
-            <Nav.Link href='/userauth'>Let Login</Nav.Link>
-            <Nav.Link href='/allbookedlist'>Check Booked Hotel List</Nav.Link>
-            {token ? <Nav.Link href='/userpage'>User Profile</Nav.Link> : null }
-            
+            <Nav.Link href='/userauth'>
+              {!token ? <Button>Login</Button> : null}
+            </Nav.Link>
+            <Nav.Link href='/allbookedlist'>
+              {token ? <Button>Check Booked Hotel List</Button> : null }
+            </Nav.Link>
+            <Nav.Link href='/userpage'>
+              {token ? <Image 
+                src='https://png.pngtree.com/png-vector/20190909/ourmid/pngtree-outline-user-icon-png-image_1727916.jpg'
+                roundedCircle
+                style={{ width: 90, height: 90 }}
+              /> : null }
+            </Nav.Link>
           </Nav>
         </Container>
         <Card className="mx-auto">
