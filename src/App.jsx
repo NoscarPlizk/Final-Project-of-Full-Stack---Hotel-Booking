@@ -11,10 +11,10 @@ import AllBookedList from "./pages/AllBookedList";
 
 export default function App() {
   const [ token, setToken ] = useLocalStorage('token', '');
-  const [ booked, setBooked ] = useLocalStorage('data', []);
-  
+  const APIurl = "https://c05a3a4b-6ce4-4b73-bcb4-4adf00190f87-00-1cbacayl5uma6.pike.replit.dev/";
+
   return (
-    <BookedList.Provider value={{ token, setToken, booked, setBooked }}>
+    <BookedList.Provider value={{ token, setToken, APIurl }}>
       <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>

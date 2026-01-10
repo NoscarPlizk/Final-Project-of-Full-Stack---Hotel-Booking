@@ -66,10 +66,18 @@ export default function Layout() {
                 <select value={adultPax} onChange={(e) => setAdultPax(e.target.value)}>
                   <option value='1'>1 Adult</option>
                   <option value='2'>2 Adult</option>
+                  <option value='3'>3 Adult</option>
+                  <option value='4'>4 Adult</option>
+                  <option value='5'>5 Adult</option>
+                  <option value='6'>6 Adult</option>
                 </select>
                 <select value={childPax} onChange={(e) => setChildPax(e.target.value)}>
                   <option value='1'>1 Children</option>
                   <option value='2'>2 Children</option>
+                  <option value='3'>3 Children</option>
+                  <option value='4'>4 Children</option>
+                  <option value='5'>5 Children</option>
+                  <option value='6'>6 Children</option>
                 </select>
               </Col>
             </Row>

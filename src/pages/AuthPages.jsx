@@ -9,6 +9,7 @@ export default function AuthPages() {
   const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   const redirect = useNavigate();
+  const APIurl = useContext(BookedList).APIurl;
   const token = useContext(BookedList).token;
   const setToken = useContext(BookedList).setToken;
 
@@ -24,12 +25,10 @@ export default function AuthPages() {
     setShow(false);
   }
 
-  const url = "https://c05a3a4b-6ce4-4b73-bcb4-4adf00190f87-00-1cbacayl5uma6.pike.replit.dev/";
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${url}login`, { username, password });
+      const res = await axios.post(`${APIurl}login`, { username, password });
       if (res.data && res.data.auth === true && res.data.token) {
         setToken(res.data.token);
         console.log('login was successful, token saved');
@@ -43,7 +42,7 @@ export default function AuthPages() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${url}signup`, { username, password });
+      const res = await axios.post(`${APIurl}signup`, { username, password });
       console.log(res.data);
     } catch (error) {
       console.error(error);

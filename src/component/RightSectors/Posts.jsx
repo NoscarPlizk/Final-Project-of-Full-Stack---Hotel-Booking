@@ -1,5 +1,7 @@
 import { Row, Col, Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { BookedList } from "../../content/hotelContent";
 
 function StartRank({ rank }) {
   return (
@@ -11,11 +13,10 @@ function StartRank({ rank }) {
 
 export default function Posts({ img, name, location, star, price }) {
   const redirect = useNavigate();
+  const APIurl = useContext(BookedList).APIurl;
   
   const redirected = () => {
-    redirect("/viewhotel", {
-      state: { img, name, location, star, price }
-    }); 
+    redirect("/viewhotel", { state: { img, name, location, star, price }}); 
   };
 
   return (
