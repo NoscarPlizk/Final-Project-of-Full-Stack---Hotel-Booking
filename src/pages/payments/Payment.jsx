@@ -1,50 +1,134 @@
-import { Form, Row, Col, Container } from "react-bootstrap";
-import BookedCardList from "./BookedCardList";
-import { useContext } from "react";
+import { Form, Row, Col, Button, Container, Card, Spinner } from "react-bootstrap";
+import { useContext, useState, useEffect } from "react";
 import { BookedList } from "../../content/hotelContent";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
-export default function Payment() {
-  const booked = useContext(BookedList).booked;
+function BookedCardList({ data, selectedIds }) {
+  const APIurl = useContext(BookedList).APIurl;
+  const redirect = useNavigate();
 
-  return (
-    <Container>
-      <Row>
-        <Col md={8}> 
-          <Form>
-            <Form.Group>
-              <Form.Label>
-                Guest Details
-              </Form.Label>
-              <Form.Control type='text' required placeholder="Full Legal Name Should Same as Passport Name"/>
-              <Form.Control type='text' required placeholder="Email Address" />
-              <Form.Control type='text' required placeholder="Phone Number" />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>
-                Credit Card Details
-              </Form.Label>
-              <Form.Control type='number' required max="12" placeholder="Card Number"/>
-              <Form.Control type='number' required max="5" placeholder="Expiry Date" />
-              <Form.Control type='number' required max="3" placeholder="CVS Code" />
-            </Form.Group> // PayPal, 
-          </Form>
-          <div>
+  const confirmBook = async () => {
+    try {
+      const booked_status = true;
+      const res = await axios.put(`${APIurl}placebookhotel`, { booked_status, selectedIds });
+      console.log(res.data);
+      redirect('/');
+    } catch (error) {
+      return console.log(error);
+    }
+  };
+
+  return ( 
+    <Card>
+      <Container>
+        <Card.Body>
+          { data && data.length > 0 ?
+            data.map((bk) => { 
+            return (
+              <Row key={bk.id}>
+                <Card className="d-flex"> 
+                  <Card.Body>
+                    <Row>
+                      <Col md={8}>
+                        <p>Hotel: {bk.hotel_name}</p>
+                        <p>Start Date: <strong>{bk.start_date}</strong> to <strong>{bk.end_date}</strong> </p>
+                        <p>{bk.adult_pax} Adults and {bk.child_pax} Children, Total: {bk.adult_pax * bk.child_pax} Person</p>  
+                      </Col>
+                      <Col md={4}>
+                        <h3>RM {bk.total_price} per night</h3>                
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Row>
+            )}) 
+          : 
             <Card>
               <Card.Body>
-                <h3>Cancelation Policy</h3>
-                <p>Free Cancelation before Nov 30</p>
-              </Card.Body>
-              <Card.Body>
-                <h3>Ground rules</h3>
-                <p>We ask every Guest the basic infomation to secure the side of customer and the hotel</p>
+                <Spinner variant='primary' />
+                <h3>Loading</h3>
               </Card.Body>
             </Card>
-          </div>
-        </Col>
-        <Col md={4}>
-          <BookedCardList lists={booked} />
-        </Col>
-      </Row>
-    </Container>
+          }
+          <Button onClick={confirmBook}> 
+            Place Order
+          </Button>
+        </Card.Body>
+      </Container>
+    </Card>
+  )
+};
+
+export default function Payment() {
+  const APIurl = useContext(BookedList).APIurl;
+  const [ bookedData, setBookedData ] = useState(null);
+  const redirect = useNavigate();
+  const { state } = useLocation();
+  const selectedIds = state?.selectedIds;
+
+  const placeOrderSelected = async () => {
+    if (selectedIds.length === 0) return redirect('/allbookedlist');
+    try {
+      const res = await axios.post(`${APIurl}tickedhotelid`, { bookingIds: selectedIds });
+      {res.data === res.data.message ? 
+        setBookedData(null) : setBookedData(res.data)
+      }  
+    } catch (error) {
+      return console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    placeOrderSelected();
+  }, []);
+
+  return (
+    <Row>
+      <Col md={8}> 
+        <Container>
+          <Card>
+            <Card.Body>
+              <Form>
+                <Form.Group>
+                  <Form.Label>
+                    Guest Details
+                  </Form.Label>
+                  <Form.Control type='text' required placeholder="Full Legal Name Should Same as Passport Name"/>
+                  <Form.Control type='text' required placeholder="Email Address" />
+                  <Form.Control type='text' required placeholder="Phone Number" />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>
+                    Credit Card Details
+                  </Form.Label>
+                  <Form.Control type='number' required max="12" placeholder="Card Number"/>
+                  <Form.Control type='number' required max="5" placeholder="Expiry Date" />
+                  <Form.Control type='number' required max="3" placeholder="CVS Code" />
+                </Form.Group> // PayPal, 
+              </Form>
+            </Card.Body>
+          </Card>
+        </Container>
+        <Container>
+          <Card>
+            <Card.Body>
+              <h3>Cancelation Policy</h3>
+              <p>Free Cancelation before Nov 30</p>
+            </Card.Body>
+          </Card>
+          <Card>
+            <Card.Body>
+              <h3>Ground rules</h3>
+              <p>We ask every Guest the basic infomation to secure the side of customer and the hotel</p>
+            </Card.Body>
+          </Card>
+        </Container>
+      </Col>
+      <Col md={4}>
+        <BookedCardList data={bookedData} selectedIds={selectedIds} />
+      </Col>
+    </Row>
+
   )
 }
