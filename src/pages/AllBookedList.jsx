@@ -5,23 +5,19 @@ import { useNavigate } from "react-router-dom";
 import useLocalStorage from "use-local-storage";
 import axios from "axios";
 
-function Booking({ hotels, selectedIds, setSelectedIds }) {
-  // function plusRoom(room) {
-  //   room + 1;
-  // };
+function Booking({ 
+  hotels, selectedHotelName, 
+  setSelectedHotelName, 
+  plusRoom, minusRoom 
+}) {
 
-  // function minusRoom(room, hotelname) {
-  //   room - 1;
-  //   if (room === 0) remove(hotelname);
-  // };
 
-  function toggleSelected(id, checked) {
-      setSelectedIds(prev => {
-      const safeId = Number(id); 
-      if (checked) return [...new Set([...prev, safeId])];
-      return prev.filter(x => x !== safeId);
+  function toggleSelected(hotel_name, checked) {
+      setSelectedHotelName(prev => {
+      if (checked) return [...new Set([...prev, hotel_name])];
+      return prev.filter(x => x !== hotel_name);
     });
-  }
+  };
 
   return (
   <>
@@ -31,7 +27,7 @@ function Booking({ hotels, selectedIds, setSelectedIds }) {
         .map((bk) => {
           return (
             <Card>
-              <Card.Body>
+              <Card.Body key={bk.hotel_name}>
                 <Row>
                   <Col>
                     <Image src={bk.hotel_img_link} width={300} height={300}/>
@@ -57,12 +53,12 @@ function Booking({ hotels, selectedIds, setSelectedIds }) {
                         <h5>Not Purchased</h5> : <h5>Purchased</h5>}
                       </Card.Body>
                     </Card>
-                    {/* <Button onClick={() => plusRoom(bk.room_amount)}>
+                    <Button onClick={() => plusRoom(bk.hotel_name)}>
                       + Plus Room
                     </Button>
                     <Button onClick={() => minusRoom(bk.room_amount, bk.hotel_name)}>
                       - Minus Room
-                    </Button> */}
+                    </Button>
                   </Col>
                 </Row>
               </Card.Body>
@@ -83,15 +79,15 @@ function Booking({ hotels, selectedIds, setSelectedIds }) {
       <h2>Pending for Book</h2>
       { hotels && hotels.length > 0 ?
         hotels.map((bk) => (
-          <Card key={bk.id}>
+          <Card key={bk.hotel_name}>
             <Card.Body>
               <Row>
                 <Col md={1}>
                   <input
                     type="checkbox"
-                    checked={selectedIds.includes(bk.id)}
+                    checked={selectedHotelName.includes(bk.hotel_name)}
                     disabled={bk.booked_status === true}
-                    onChange={(e) => toggleSelected(bk.id, e.target.checked)}
+                    onChange={(e) => toggleSelected(bk.hotel_name, e.target.checked)}
                   />
                 </Col>
                 <Col md={3}>
@@ -118,12 +114,12 @@ function Booking({ hotels, selectedIds, setSelectedIds }) {
                       <h5>Not Purchased</h5> : <h5>Purchased</h5>}
                     </Card.Body>
                   </Card>
-                  {/* <Button onClick={() => plusRoom(bk.room_amount)}>
+                  <Button onClick={() => plusRoom(bk.hotel_name)}>
                     + Plus Room
                   </Button>
                   <Button onClick={() => minusRoom(bk.room_amount, bk.hotel_name)}>
                     - Minus Room
-                  </Button> */}
+                  </Button>
                 </Col>
               </Row>
             </Card.Body>
@@ -143,18 +139,18 @@ function Booking({ hotels, selectedIds, setSelectedIds }) {
   );
 };
 
-function Order({ selectedId }) {
+function Order({ selectedHotelName }) {
   const redirect = useNavigate();
 
-  function executeRedirect(selectedId) {
-    redirect('/payment', { state: { selectedId }});
+  function executeRedirect(selectedHotelName) {
+    redirect('/payment', { state: { selectedHotelName }});
   };
 
   return ( 
     <>
       <Card>
         <Card.Body>
-          <Button onClick={() => executeRedirect(selectedId)}>
+          <Button onClick={() => executeRedirect(selectedHotelName)}>
             Go Check Out
           </Button>
         </Card.Body>
@@ -166,7 +162,7 @@ function Order({ selectedId }) {
 export default function AllBookedList() {
   const APIurl = useContext(BookedList).APIurl;
   const [ bookedData, setBookedData ] = useState(null);
-  const [ selectedIds, setSelectedIds ] = useLocalStorage("selectedHotelIds", []);
+  const [ selectedHotelName, setSelectedHotelName ] = useLocalStorage("selectedHotelIds", []);
 
   const GetBookedData = async () => {
     try {
@@ -179,15 +175,35 @@ export default function AllBookedList() {
     }
   };
 
-  // const deleteBooked = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await axios.delete(`${APIurl}deletebook`);
-  //     if (!res.data) {console.log(`Delete Success`);};
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  async function plusRoom(hotel_name) {
+    const setNum = 1;
+    try {
+      await axios.put(`${APIurl}increaseroom`, {setNum, hotel_name});
+      await GetBookedData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async function minusRoom(room, hotel_name) {
+    const setNum = 1;
+    if (room === 0) removeSlot(hotel_name);
+    try {
+      await axios.put(`${APIurl}decreaseroom`, {setNum, hotel_name});
+      await GetBookedData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async function removeSlot(hotel_name) {
+    try {
+      await axios.delete(`${APIurl}deletebookrow`, {hotel_name});
+      await GetBookedData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     GetBookedData();
@@ -199,12 +215,14 @@ export default function AllBookedList() {
         <Col md={8}>
           <Booking 
             hotels={bookedData} 
-            selectedIds={selectedIds} 
-            setSelectedIds={setSelectedIds}
+            selectedHotelName={selectedHotelName} 
+            setSelectedHotelName={setSelectedHotelName}
+            plusRoom={plusRoom}
+            minusRoom={minusRoom}
           />
         </Col>
         <Col md={4}>
-          <Order selectedId={selectedIds} />
+          <Order selectedHotelName={selectedHotelName} />
         </Col>
       </Row>
     </>
