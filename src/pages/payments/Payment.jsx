@@ -4,14 +4,14 @@ import { BookedList } from "../../content/hotelContent";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-function BookedCardList({ data, selectedIds }) {
+function BookedCardList({ data, hotel_name }) {
   const APIurl = useContext(BookedList).APIurl;
   const redirect = useNavigate();
 
   const confirmBook = async () => {
     try {
       const booked_status = true;
-      const res = await axios.put(`${APIurl}placebookhotel`, { booked_status, selectedIds });
+      const res = await axios.put(`${APIurl}placebookhotel`, { booked_status, hotel_name });
       console.log(res.data);
       redirect('/');
     } catch (error) {
@@ -65,12 +65,13 @@ export default function Payment() {
   const [ bookedData, setBookedData ] = useState(null);
   const redirect = useNavigate();
   const { state } = useLocation();
-  const selectedIds = state?.selectedIds;
+  const hotel_name = state?.selectedHotelName;
+  console.log("hotel_name:", hotel_name);
 
   const placeOrderSelected = async () => {
-    if (selectedIds.length === 0) return redirect('/allbookedlist');
+    if (hotel_name.length === 0) return redirect('/allbookedlist');
     try {
-      const res = await axios.post(`${APIurl}tickedhotelid`, { bookingIds: selectedIds });
+      const res = await axios.get(`${APIurl}tickedhotelid`, { params: { hotel_name } });
       {res.data === res.data.message ? 
         setBookedData(null) : setBookedData(res.data)
       }  
@@ -126,7 +127,7 @@ export default function Payment() {
         </Container>
       </Col>
       <Col md={4}>
-        <BookedCardList data={bookedData} selectedIds={selectedIds} />
+        <BookedCardList data={bookedData} hotel_name={hotel_name} />
       </Col>
     </Row>
 

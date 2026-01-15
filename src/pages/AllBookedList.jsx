@@ -163,6 +163,7 @@ export default function AllBookedList() {
   const APIurl = useContext(BookedList).APIurl;
   const [ bookedData, setBookedData ] = useState(null);
   const [ selectedHotelName, setSelectedHotelName ] = useLocalStorage("selectedHotelIds", []);
+  console.log({ chooseName: selectedHotelName });
 
   const GetBookedData = async () => {
     try {
