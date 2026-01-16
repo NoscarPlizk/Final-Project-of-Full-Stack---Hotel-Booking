@@ -5,12 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useLocalStorage from "use-local-storage";
 import axios from "axios";
 
-function Booking({ 
-  hotels, selectedHotelName, 
-  setSelectedHotelName, 
-  plusRoom, minusRoom 
-}) {
-
+function Booking({ hotels, selectedHotelName, setSelectedHotelName, plusRoom, minusRoom, removeSlot}) {
 
   function toggleSelected(hotel_name, checked) {
       setSelectedHotelName(prev => {
@@ -21,13 +16,14 @@ function Booking({
 
   return (
   <>
+    <h2>Booked Room</h2>
     <Row id='Booked Hotel'>
       { hotels && hotels.length > 0 ?
         hotels.filter(bk => bk.booked_status === true)
         .map((bk) => {
           return (
-            <Card>
-              <Card.Body key={bk.hotel_name}>
+            <Card key={bk.hotel_name}>
+              <Card.Body>
                 <Row>
                   <Col>
                     <Image src={bk.hotel_img_link} width={300} height={300}/>
@@ -53,11 +49,8 @@ function Booking({
                         <h5>Not Purchased</h5> : <h5>Purchased</h5>}
                       </Card.Body>
                     </Card>
-                    <Button onClick={() => plusRoom(bk.hotel_name)}>
-                      + Plus Room
-                    </Button>
-                    <Button onClick={() => minusRoom(bk.room_amount, bk.hotel_name)}>
-                      - Minus Room
+                    <Button onClick={() => removeSlot(bk.hotel_name)}>
+                      Cancel Booked
                     </Button>
                   </Col>
                 </Row>
@@ -78,7 +71,8 @@ function Booking({
     <Row id='Cart List'>
       <h2>Pending for Book</h2>
       { hotels && hotels.length > 0 ?
-        hotels.map((bk) => (
+        hotels.filter(bk => bk.booked_status === false)
+        .map((bk) => (
           <Card key={bk.hotel_name}>
             <Card.Body>
               <Row>
@@ -199,7 +193,7 @@ export default function AllBookedList() {
 
   async function removeSlot(hotel_name) {
     try {
-      await axios.delete(`${APIurl}deletebookrow`, {hotel_name});
+      await axios.delete(`${APIurl}deletebookrow`, { data: { hotel_name } });
       await GetBookedData();
     } catch (error) {
       console.log(error);
@@ -220,6 +214,7 @@ export default function AllBookedList() {
             setSelectedHotelName={setSelectedHotelName}
             plusRoom={plusRoom}
             minusRoom={minusRoom}
+            removeSlot={removeSlot}
           />
         </Col>
         <Col md={4}>

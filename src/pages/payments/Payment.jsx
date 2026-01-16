@@ -24,7 +24,8 @@ function BookedCardList({ data, hotel_name }) {
       <Container>
         <Card.Body>
           { data && data.length > 0 ?
-            data.map((bk) => { 
+            data.filter(bk => bk.booked_status === false )
+            .map((bk) => { 
             return (
               <Row key={bk.id}>
                 <Card className="d-flex"> 
