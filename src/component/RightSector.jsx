@@ -33,6 +33,13 @@ export default function RightSector() {
         star={5} 
         price='458' 
       />   
+      <Posts 
+        img='https://ik.imagekit.io/tvlk/apr-asset/dgXfoyh24ryQLRcGq00cIdKHRmotrWLNlvG-TxlcLxGkiDwaUSggleJNPRgIHCX6/hotel/asset/20065178-735784f7610627c7c6d5983d58311ea6.jpeg?_src=imagekit&tr=c-at_max,f-jpg,h-360,pr-true,q-80,w-640' 
+        name='Sleeping Lion Suites' 
+        location='Bukit Bintang, Kuala Lumpur' 
+        star={5} 
+        price='458' 
+      />   
     </>
   );
 }

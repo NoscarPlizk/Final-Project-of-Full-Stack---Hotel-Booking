@@ -10,8 +10,8 @@ export default function Layout() {
 
   const [ initialDate, setInitialDate ] = useState('');
   const [ dueDate, setDueDate ] = useState('');
-  const [ adultPax, setAdultPax ] = useState('');
-  const [ childPax, setChildPax ] = useState('');
+  const [ adultPax, setAdultPax ] = useState(1);
+  const [ childPax, setChildPax ] = useState(1);
 
   const startDate = (value) => {
     setInitialDate(value);

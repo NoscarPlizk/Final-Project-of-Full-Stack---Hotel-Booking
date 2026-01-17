@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import useLocalStorage from "use-local-storage";
 import axios from "axios";
 
-function Booking({ hotels, selectedHotelName, setSelectedHotelName, plusRoom, minusRoom, removeSlot}) {
+function Booking({ hotels, selectedHotelName, 
+  setSelectedHotelName, plusRoom, minusRoom, removeBooked}) {
 
   function toggleSelected(hotel_name, checked) {
       setSelectedHotelName(prev => {
@@ -22,36 +23,39 @@ function Booking({ hotels, selectedHotelName, setSelectedHotelName, plusRoom, mi
         hotels.filter(bk => bk.booked_status === true)
         .map((bk) => {
           return (
-            <Card key={bk.hotel_name}>
+            <Card key={bk.hotel_name} className="h-100">
               <Card.Body>
                 <Row>
-                  <Col>
-                    <Image src={bk.hotel_img_link} width={300} height={300}/>
+                  <Col md={3}>
+                    <Image src={bk.hotel_img_link} width={200} height={200}/>
                   </Col>
-                  <Col>
+                  <Col md={6}>
                     <Container>
                       <Row>
                         <h3>{bk.hotel_name}</h3>
-                        <p>Amount of Room: {bk.room_amount}</p>
-                        <p>Total Price of Booked the Hotel {bk.total_price}</p>
                       </Row>
-                      <Row>
+                      <Row className="mt-4">
+                        <h5>Amount of Room: {bk.room_amount}</h5>
+                        <h5>Unit Price of Room: {bk.unit_price}</h5>
                         <Col>{bk.start_date}</Col>
                         <Col>Until</Col>
                         <Col>{bk.end_date}</Col>
                       </Row>
                     </Container>
                   </Col>
-                  <Col>
-                    <Card> 
-                      <Card.Body>
-                        {bk.booked_status === false ? 
-                        <h5>Not Purchased</h5> : <h5>Purchased</h5>}
-                      </Card.Body>
-                    </Card>
-                    <Button onClick={() => removeSlot(bk.hotel_name)}>
-                      Cancel Booked
-                    </Button>
+                  <Col md={2}>
+                    <Row>
+                      <Card className="mb-3"> 
+                        <Card.Body>
+                          <p>Total Price: <strong>RM {bk.total_price}</strong></p>
+                          {bk.booked_status === false ? 
+                          <h5>Not Purchased</h5> : <h5>Purchased</h5>}
+                        </Card.Body>
+                      </Card>
+                      <Button className="mb-3" onClick={() => removeBooked(bk.hotel_name)}>
+                        Cancel Booked
+                      </Button>                      
+                    </Row>
                   </Col>
                 </Row>
               </Card.Body>
@@ -85,16 +89,16 @@ function Booking({ hotels, selectedHotelName, setSelectedHotelName, plusRoom, mi
                   />
                 </Col>
                 <Col md={3}>
-                  <Image src={bk.hotel_img_link} width={300} height={300}/>
+                  <Image src={bk.hotel_img_link} width={200} height={200}/>
                 </Col>
                 <Col md={6}>
                   <Container>
                     <Row>
                       <h3>{bk.hotel_name}</h3>
-                      <p>Amount of Room: {bk.room_amount}</p>
-                      <p>Total Price of Booked the Hotel {bk.total_price}</p>
                     </Row>
-                    <Row>
+                    <Row className="mt-4">
+                      <h5>Amount of Room: {bk.room_amount}</h5>
+                      <h5>Unit Price of Room: {bk.unit_price}</h5>
                       <Col>{bk.start_date}</Col>
                       <Col>Until</Col>
                       <Col>{bk.end_date}</Col>
@@ -102,18 +106,29 @@ function Booking({ hotels, selectedHotelName, setSelectedHotelName, plusRoom, mi
                   </Container>
                 </Col>
                 <Col md={2}>
-                  <Card> 
-                    <Card.Body>
-                      {bk.booked_status === false ? 
-                      <h5>Not Purchased</h5> : <h5>Purchased</h5>}
-                    </Card.Body>
-                  </Card>
-                  <Button onClick={() => plusRoom(bk.hotel_name)}>
-                    + Plus Room
-                  </Button>
-                  <Button onClick={() => minusRoom(bk.room_amount, bk.hotel_name)}>
-                    - Minus Room
-                  </Button>
+                  <Row>
+                    <Card> 
+                      <Card.Body>
+                        <p>Total Price: <strong>RM {bk.total_price}</strong></p>
+                        {bk.booked_status === false ? 
+                        <h5>Not Purchased</h5> : <h5>Purchased</h5>}
+                      </Card.Body>
+                    </Card>
+                  </Row>
+                  <Row className="mt-3 mb-3">
+                    <Button 
+                      className="mt-2 mb-2" 
+                      onClick={() => plusRoom(bk.room_amount, bk.unit_price, bk.hotel_name)}
+                    >
+                      + Plus Room
+                    </Button>
+                    <Button 
+                      className="mt-2 mb-2" 
+                      onClick={() => minusRoom(bk.room_amount, bk.unit_price, bk.hotel_name)}
+                    >
+                      - Minus Room
+                    </Button>
+                  </Row>
                 </Col>
               </Row>
             </Card.Body>
@@ -153,6 +168,7 @@ function Order({ selectedHotelName }) {
   );
 };
 
+
 export default function AllBookedList() {
   const APIurl = useContext(BookedList).APIurl;
   const [ bookedData, setBookedData ] = useState(null);
@@ -170,30 +186,56 @@ export default function AllBookedList() {
     }
   };
 
-  async function plusRoom(hotel_name) {
+  async function plusRoom(room_amount, unit_price, hotel_name) {
     const setNum = 1;
+    const newRoom_amount = room_amount + setNum;
     try {
       await axios.put(`${APIurl}increaseroom`, {setNum, hotel_name});
+      await updateTotalPrice(newRoom_amount, unit_price, hotel_name);
       await GetBookedData();
     } catch (error) {
       console.log(error);
     }
   };
 
-  async function minusRoom(room, hotel_name) {
+  async function minusRoom(room_amount, unit_price, hotel_name) {
     const setNum = 1;
-    if (room === 0) removeSlot(hotel_name);
+    const newRoom_amount = room_amount - setNum;
     try {
       await axios.put(`${APIurl}decreaseroom`, {setNum, hotel_name});
+      if (room_amount - setNum <= 0) {
+        await removeBooking(hotel_name);
+        return;
+      }
+      await updateTotalPrice(newRoom_amount, unit_price, hotel_name);
       await GetBookedData();
     } catch (error) {
       console.log(error);
     }
   };
 
-  async function removeSlot(hotel_name) {
+  async function updateTotalPrice(newRoom_amount, unit_price, hotel_name) {
+    const newTotal = newRoom_amount * unit_price;
+    console.log({ newTotal, newRoom_amount, unit_price});
     try {
-      await axios.delete(`${APIurl}deletebookrow`, { data: { hotel_name } });
+      await axios.put(`${APIurl}updatetotalprice`, {newTotal, hotel_name});
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function removeBooking(hotel_name) {
+    try {
+      await axios.delete(`${APIurl}deletebooking`, { data: { hotel_name } });
+      await GetBookedData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  async function removeBooked(hotel_name) {
+    try {
+      await axios.delete(`${APIurl}deletebooked`, { data: { hotel_name } });
       await GetBookedData();
     } catch (error) {
       console.log(error);
@@ -214,7 +256,7 @@ export default function AllBookedList() {
             setSelectedHotelName={setSelectedHotelName}
             plusRoom={plusRoom}
             minusRoom={minusRoom}
-            removeSlot={removeSlot}
+            removeBooked={removeBooked}
           />
         </Col>
         <Col md={4}>

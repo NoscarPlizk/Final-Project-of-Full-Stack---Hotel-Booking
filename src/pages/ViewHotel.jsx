@@ -1,4 +1,4 @@
-import { Row, Col, Container, Button } from "react-bootstrap";
+import { Row, Col, Container, Button, Modal, Card } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { InfoContext } from "../content/infoContent";
 import { BookedList } from '../content/hotelContent';
 
 export default function ViewHotel() {
+  const [ showModal, setShowModal ] = useState(false)
   const APIurl = useContext(BookedList).APIurl;
   const token = useContext(BookedList).token;
   const start_date = useContext(InfoContext).initialDate;
@@ -17,16 +18,24 @@ export default function ViewHotel() {
 
   const hotel_img_link = state?.img;
   const hotel_name = state?.name;
-  const price = state?.price;
+  const unit_price = state?.price;
   const location = state?.location;
 
   const [ room_amount, setRoom ] = useState(null);  
-  let total_price = room_amount  * price;
+  let total_price = room_amount * unit_price;
+  
 
   const inspectAuthThenBook = async (e) => {
     e.preventDefault();
     if (!token) redirect('/userauth');
     let booked_status = false;
+
+    console.log({ Info_data: room_amount, start_date, end_date, adult_pax, child_pax })
+    if (!start_date || !end_date || !room_amount) {
+      console.log({ message: `MISSING START DATE, END DATE, or ROOM AMOUNT`});
+      setShowModal(true);
+      return;
+    }
 
     try {
       const res = await axios.post(`${APIurl}booked`, {
@@ -39,7 +48,8 @@ export default function ViewHotel() {
         child_pax, 
         hotel_img_link, 
         total_price, 
-        booked_status
+        booked_status,
+        unit_price,
       });
       console.log(res);
     } catch (error) {
@@ -57,7 +67,19 @@ export default function ViewHotel() {
   }
   
   return (
-    <>
+    <>        
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Body>
+          <Card>
+            <Card.Body>
+              <h2>You haven't choose your Date or Room Amount Yet.</h2>
+              <Button onClick={() => setShowModal(false)}>
+                Close
+              </Button>
+            </Card.Body>
+          </Card>
+        </Modal.Body>
+      </Modal>
       <Container>
         <Row>
           <Col>
@@ -66,7 +88,7 @@ export default function ViewHotel() {
           <Col>
             <h3>{hotel_name}</h3>
             <p>Description</p>
-            <h4><strong>RM {price}</strong> per Room</h4>
+            <h4><strong>RM {unit_price}</strong> per Room</h4>
             <Row>
               <Col>
                 <Button onClick={increaseRoomAmount}>
