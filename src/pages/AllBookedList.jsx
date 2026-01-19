@@ -172,15 +172,13 @@ function Order({ selectedHotelName }) {
 export default function AllBookedList() {
   const APIurl = useContext(BookedList).APIurl;
   const [ bookedData, setBookedData ] = useState(null);
-  const [ selectedHotelName, setSelectedHotelName ] = useLocalStorage("selectedHotelIds", []);
+  const [ selectedHotelName, setSelectedHotelName ] = useLocalStorage("selectedHotelName", []);
   console.log({ chooseName: selectedHotelName });
 
   const GetBookedData = async () => {
     try {
       const res = await axios.get(`${APIurl}getallbookeddata`);
-      {res.data === res.data.message ? 
-        setBookedData(null) : setBookedData(res.data)
-      }  
+      setBookedData(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       return console.log(error);
     }
@@ -241,6 +239,18 @@ export default function AllBookedList() {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    console.log({ selectedHotelName: selectedHotelName, bookedData: bookedData })
+      if ( bookedData === null ) return;
+      if ( bookedData.length === 0 ) { setSelectedHotelName([]); return; }; 
+
+      const validPending = new Set(
+        bookedData.filter(bk => bk.booked_status === false).map(bk => bk.hotel_name)
+      );
+
+      setSelectedHotelName(prev => prev.filter(hotel_name => validPending.has(hotel_name)));
+  }, [bookedData]);
 
   useEffect(() => {
     GetBookedData();
