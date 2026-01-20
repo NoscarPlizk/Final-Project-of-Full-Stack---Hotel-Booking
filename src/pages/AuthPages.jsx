@@ -106,9 +106,9 @@ export default function AuthPages() {
                 </Container>
               </Col>
               <Col>
-                <Container className="py-3">
+                <Container className="mt-3">
                   <Button onClick={handleLogin}>Login</Button>
-                  <p>Or</p>
+                  <p className="mt-3">Or</p>
                   <Button onClick={handleShowRegister}>New Register</Button>
                 </Container>
               </Col>

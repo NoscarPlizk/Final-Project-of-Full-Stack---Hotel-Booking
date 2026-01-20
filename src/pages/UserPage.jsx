@@ -1,16 +1,24 @@
 import { Col, Image, Row, Button, Container } from "react-bootstrap";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { BookedList } from "../content/hotelContent";
 import { useNavigate } from "react-router-dom";
 
 export default function UserPage() {  
   const terminateSession = useNavigate();
+  const redirect = useNavigate();
+  const token = useContext(BookedList).token;
   const setToken = useContext(BookedList).setToken;
+
+  useEffect(() => {
+    if (!token) redirect('/userauth');
+  }, [token])
 
   const SignOutProcess = () => {
     setToken('');
-    terminateSession('/');
+    return terminateSession('/');
   }
+
+
 
   return (
     <Container>

@@ -157,13 +157,15 @@ function Order({ selectedHotelName }) {
 
   return ( 
     <>
-      <Card>
-        <Card.Body>
-          <Button onClick={() => executeRedirect(selectedHotelName)}>
-            Go Check Out
-          </Button>
-        </Card.Body>
-      </Card>
+      <Container>
+        <Card className="mt-3">
+          <Card.Body>
+            <Button onClick={() => executeRedirect(selectedHotelName)}>
+              Go Check Out
+            </Button>
+          </Card.Body>
+        </Card>
+      </Container>
     </>
   );
 };
@@ -171,6 +173,8 @@ function Order({ selectedHotelName }) {
 
 export default function AllBookedList() {
   const APIurl = useContext(BookedList).APIurl;
+  const token = useContext(BookedList).token;
+  const redirect = useNavigate();
   const [ bookedData, setBookedData ] = useState(null);
   const [ selectedHotelName, setSelectedHotelName ] = useLocalStorage("selectedHotelName", []);
   console.log({ chooseName: selectedHotelName });
@@ -253,6 +257,7 @@ export default function AllBookedList() {
   }, [bookedData]);
 
   useEffect(() => {
+    if (!token) redirect('/userauth');
     GetBookedData();
   }, []);
 

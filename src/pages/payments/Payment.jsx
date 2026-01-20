@@ -52,7 +52,7 @@ function BookedCardList({ data, hotel_name }) {
               </Card.Body>
             </Card>
           }
-          <Button onClick={confirmBook}> 
+          <Button className="mt-3" onClick={confirmBook}> 
             Place Order
           </Button>
         </Card.Body>
@@ -63,6 +63,7 @@ function BookedCardList({ data, hotel_name }) {
 
 export default function Payment() {
   const APIurl = useContext(BookedList).APIurl;
+  const token = useContext(BookedList).token;
   const [ bookedData, setBookedData ] = useState(null);
   const redirect = useNavigate();
   const { state } = useLocation();
@@ -82,17 +83,18 @@ export default function Payment() {
   }
 
   useEffect(() => {
+    if (!token) redirect('/userauth');
     placeOrderSelected();
   }, []);
 
   return (
-    <Row>
+    <Row className="mt-3">
       <Col md={8}> 
         <Container>
-          <Card>
+          <Card className="mb-3">
             <Card.Body>
               <Form>
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>
                     Guest Details
                   </Form.Label>
@@ -107,19 +109,19 @@ export default function Payment() {
                   <Form.Control type='number' required max="12" placeholder="Card Number"/>
                   <Form.Control type='number' required max="5" placeholder="Expiry Date" />
                   <Form.Control type='number' required max="3" placeholder="CVS Code" />
-                </Form.Group> // PayPal, 
+                </Form.Group>
               </Form>
             </Card.Body>
           </Card>
         </Container>
         <Container>
-          <Card>
+          <Card className="mt-3 mb-3">
             <Card.Body>
               <h3>Cancelation Policy</h3>
               <p>Free Cancelation before Nov 30</p>
             </Card.Body>
           </Card>
-          <Card>
+          <Card className="mt-3 mb-3">
             <Card.Body>
               <h3>Ground rules</h3>
               <p>We ask every Guest the basic infomation to secure the side of customer and the hotel</p>
@@ -128,7 +130,9 @@ export default function Payment() {
         </Container>
       </Col>
       <Col md={4}>
-        <BookedCardList data={bookedData} hotel_name={hotel_name} />
+        <Container>
+          <BookedCardList data={bookedData} hotel_name={hotel_name} />
+        </Container>
       </Col>
     </Row>
 
